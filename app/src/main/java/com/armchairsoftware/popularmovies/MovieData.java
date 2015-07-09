@@ -1,7 +1,18 @@
 package com.armchairsoftware.popularmovies;
 
-/**
- * Created by Mark on 7/9/2015.
- */
 public class MovieData {
+    boolean adult;
+    String backdropPath;
+    int[] genreIds;
+    int id;
+    String originalLanguage;
+    String originalTitle;
+    String overview;
+    String releaseDate;
+    String posterPath;
+    double popularity;
+    String title;
+    boolean video;
+    double voteAverage;
+    int voteCount;
 }
