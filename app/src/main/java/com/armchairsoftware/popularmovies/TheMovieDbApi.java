@@ -19,7 +19,8 @@ import java.util.ArrayList;
 public class TheMovieDbApi {
     private final String LOG_TAG = TheMovieDbApi.class.getSimpleName();
     private Context _context;
-    private final String _baseUrl = "http://api.themoviedb.org/3";
+    private final String BASE_URL = "http://api.themoviedb.org/3";
+    public static final String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/w185";
 
     public TheMovieDbApi(Context context) {
         _context = context;
@@ -29,7 +30,7 @@ public class TheMovieDbApi {
             throws IOException {
 
         final String discoverMovieUrl = "/discover/movie?";
-        Uri uri = Uri.parse(_baseUrl + discoverMovieUrl)
+        Uri uri = Uri.parse(BASE_URL + discoverMovieUrl)
                 .buildUpon()
                 .appendQueryParameter("api_key", _context.getString(R.string.api_key))
                 .appendQueryParameter("sort_by", sortOrder)
@@ -43,7 +44,7 @@ public class TheMovieDbApi {
             throws IOException {
 
         final String movieDetailsUrl = "/movie/" + Integer.toString(id);
-        Uri uri = Uri.parse(_baseUrl + movieDetailsUrl)
+        Uri uri = Uri.parse(BASE_URL + movieDetailsUrl)
                 .buildUpon()
                 .appendQueryParameter("api_key", _context.getString(R.string.api_key))
                 .build();
@@ -56,7 +57,7 @@ public class TheMovieDbApi {
             throws IOException {
 
         final String movieTrailersUrl = "/movie/" + Integer.toString(id) + "/videos";
-        Uri uri = Uri.parse(_baseUrl + movieTrailersUrl)
+        Uri uri = Uri.parse(BASE_URL + movieTrailersUrl)
                 .buildUpon()
                 .appendQueryParameter("api_key", _context.getString(R.string.api_key))
                 .build();
@@ -69,7 +70,7 @@ public class TheMovieDbApi {
             throws IOException {
 
         final String movieReviewsUrl = "/movie/" + Integer.toString(id) + "/reviews";
-        Uri uri = Uri.parse(_baseUrl + movieReviewsUrl)
+        Uri uri = Uri.parse(BASE_URL + movieReviewsUrl)
                 .buildUpon()
                 .appendQueryParameter("api_key", _context.getString(R.string.api_key))
                 .build();
