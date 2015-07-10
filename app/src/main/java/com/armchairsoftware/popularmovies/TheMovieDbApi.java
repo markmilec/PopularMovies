@@ -26,7 +26,7 @@ public class TheMovieDbApi {
     }
 
     public String fetchDiscoverMovieResults(String sortOrder)
-        throws IOException {
+            throws IOException {
 
         final String discoverMovieUrl = "/discover/movie?";
         Uri uri = Uri.parse(_baseUrl + discoverMovieUrl)
@@ -37,6 +37,145 @@ public class TheMovieDbApi {
 
         URL url = new URL(uri.toString());
         return fetchJsonResults(url);
+    }
+
+    public String fetchMovieDetails(int id)
+            throws IOException {
+
+        final String movieDetailsUrl = "/movie/" + Integer.toString(id);
+        Uri uri = Uri.parse(_baseUrl + movieDetailsUrl)
+                .buildUpon()
+                .appendQueryParameter("api_key", _context.getString(R.string.api_key))
+                .build();
+
+        URL url = new URL(uri.toString());
+        return fetchJsonResults(url);
+    }
+
+    public String fetchMovieTrailers(int id)
+            throws IOException {
+
+        final String movieTrailersUrl = "/movie/" + Integer.toString(id) + "/videos";
+        Uri uri = Uri.parse(_baseUrl + movieTrailersUrl)
+                .buildUpon()
+                .appendQueryParameter("api_key", _context.getString(R.string.api_key))
+                .build();
+
+        URL url = new URL(uri.toString());
+        return fetchJsonResults(url);
+    }
+
+    public String fetchMovieReviews(int id)
+            throws IOException {
+
+        final String movieReviewsUrl = "/movie/" + Integer.toString(id) + "/reviews";
+        Uri uri = Uri.parse(_baseUrl + movieReviewsUrl)
+                .buildUpon()
+                .appendQueryParameter("api_key", _context.getString(R.string.api_key))
+                .build();
+
+        URL url = new URL(uri.toString());
+        return fetchJsonResults(url);
+    }
+
+    public ArrayList<MovieData> parseDiscoverMovieResults(String json)
+        throws JSONException {
+
+        ArrayList<MovieData> movieDataList = new ArrayList<>();
+        JSONObject resultsJson = new JSONObject(json);
+        JSONArray resultsArray = resultsJson.getJSONArray("results");
+        for (int i = 0; i < resultsArray.length(); i++) {
+            JSONObject result = resultsArray.getJSONObject(i);
+            MovieData movieData = new MovieData();
+            movieData.adult = result.getBoolean("adult");
+            movieData.backdropPath = result.getString("backdrop_path");
+            movieData.id = result.getInt("id");
+            movieData.originalLanguage = result.getString("original_language");
+            movieData.originalTitle = result.getString("original_title");
+            movieData.overview = result.getString("overview");
+            movieData.popularity = result.getDouble("popularity");
+            movieData.posterPath = result.getString("poster_path");
+            movieData.releaseDate = result.getString("release_date");
+            movieData.title = result.getString("title");
+            movieData.video = result.getBoolean("video");
+            movieData.voteAverage = result.getDouble("vote_average");
+            movieData.voteCount = result.getInt("vote_count");
+            movieDataList.add(movieData);
+        }
+        return movieDataList;
+    }
+
+    public ArrayList<MovieData> parseMovieDetails(String json)
+            throws JSONException {
+
+        ArrayList<MovieData> movieDataList = new ArrayList<>();
+        JSONObject resultsJson = new JSONObject(json);
+        JSONArray resultsArray = resultsJson.getJSONArray("results");
+        for (int i = 0; i < resultsArray.length(); i++) {
+            JSONObject result = resultsArray.getJSONObject(i);
+            MovieData movieData = new MovieData();
+            movieData.adult = result.getBoolean("adult");
+            movieData.backdropPath = result.getString("backdrop_path");
+            movieData.budget = result.getInt("budget");
+            movieData.homepage = result.getString("homepage");
+            movieData.id = result.getInt("id");
+            movieData.imdb_id = result.getString("imdb_id");
+            movieData.originalLanguage = result.getString("original_language");
+            movieData.originalTitle = result.getString("original_title");
+            movieData.overview = result.getString("overview");
+            movieData.releaseDate = result.getString("release_date");
+            movieData.posterPath = result.getString("poster_path");
+            movieData.popularity = result.getDouble("popularity");
+            movieData.revenue = result.getInt("revenue");
+            movieData.runtime = result.getInt("runtime");
+            movieData.status = result.getString("status");
+            movieData.tagline = result.getString("tagline");
+            movieData.title = result.getString("title");
+            movieData.video = result.getBoolean("video");
+            movieData.voteAverage = result.getDouble("vote_average");
+            movieData.voteCount = result.getInt("vote_count");
+            movieDataList.add(movieData);
+        }
+        return movieDataList;
+    }
+
+    public ArrayList<MovieTrailer> parseMovieTrailers(String json)
+            throws JSONException {
+
+        ArrayList<MovieTrailer> movieTrailers = new ArrayList<>();
+        JSONObject resultsJson = new JSONObject(json);
+        JSONArray resultsArray = resultsJson.getJSONArray("results");
+        for (int i = 0; i < resultsArray.length(); i++) {
+            JSONObject result = resultsArray.getJSONObject(i);
+            MovieTrailer movieTrailer = new MovieTrailer();
+            movieTrailer.id = result.getString("id");
+            movieTrailer.iso_639_1 = result.getString("iso_639_1");
+            movieTrailer.key = result.getString("key");
+            movieTrailer.name = result.getString("name");
+            movieTrailer.site = result.getString("site");
+            movieTrailer.size = result.getInt("size");
+            movieTrailer.type = result.getString("type");
+            movieTrailers.add(movieTrailer);
+        }
+        return movieTrailers;
+    }
+
+    public ArrayList<MovieReview> parseMovieReviews(String json)
+            throws JSONException {
+
+        ArrayList<MovieReview> movieReviews = new ArrayList<>();
+        JSONObject resultsJson = new JSONObject(json);
+        JSONArray resultsArray = resultsJson.getJSONArray("results");
+        for (int i = 0; i < resultsArray.length(); i++) {
+            JSONObject result = resultsArray.getJSONObject(i);
+            MovieReview movieReview = new MovieReview();
+            movieReview.id = result.getString("id");
+            movieReview.author = result.getString("author");
+            movieReview.content = result.getString("content");
+            movieReview.url = result.getString("url");
+            movieReviews.add(movieReview);
+        }
+        return movieReviews;
     }
 
     private String fetchJsonResults(URL url) {
@@ -93,30 +232,5 @@ public class TheMovieDbApi {
         }
 
         return jsonStr;
-    }
-
-    public ArrayList<MovieData> parseDiscoverMovieResults(String json)
-        throws JSONException {
-
-        ArrayList<MovieData> movieDataList = new ArrayList<>();
-        JSONObject resultsJson = new JSONObject(json);
-        JSONArray resultsArray = resultsJson.getJSONArray("results");
-        for (int i = 0; i < resultsArray.length(); i++) {
-            JSONObject result = resultsArray.getJSONObject(i);
-            MovieData movieData = new MovieData();
-            movieData.adult = result.getBoolean("adult");
-            movieData.backdropPath = result.getString("backdrop_path");
-            movieData.id = result.getInt("id");
-            movieData.originalLanguage = result.getString("original_language");
-            movieData.overview = result.getString("overview");
-            movieData.releaseDate = result.getString("release_date");
-            movieData.popularity = result.getDouble("popularity");
-            movieData.title = result.getString("title");
-            movieData.video = result.getBoolean("video");
-            movieData.voteAverage = result.getDouble("vote_average");
-            movieData.voteCount = result.getInt("vote_count");
-            movieDataList.add(movieData);
-        }
-        return movieDataList;
     }
 }
