@@ -2,6 +2,7 @@ package com.armchairsoftware.popularmovies;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -34,15 +35,9 @@ public class SettingsActivity extends PreferenceActivity
     }
 
     private void bindPreferenceSummaryToValue(Preference preference) {
-        // Set the listener to watch for value changes.
         preference.setOnPreferenceChangeListener(this);
-
-        // Trigger the listener immediately with the preference's
-        // current value.
-        onPreferenceChange(preference,
-                PreferenceManager
-                        .getDefaultSharedPreferences(preference.getContext())
-                        .getString(preference.getKey(), ""));
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(preference.getContext());
+        onPreferenceChange(preference, prefs.getString(preference.getKey(), ""));
     }
 
     @Override
