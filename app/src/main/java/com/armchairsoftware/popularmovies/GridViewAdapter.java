@@ -61,12 +61,7 @@ final class GridViewAdapter extends BaseAdapter {
         MovieData movie = _movies.get(position);
         if (movie.posterPath != null && !movie.posterPath.isEmpty()) {
             String url = TheMovieDbApi.BASE_IMAGE_URL + movie.posterPath;
-            Log.d(LOG_TAG, url);
-            Picasso.with(_context).load(url)
-                    //.placeholder(R.drawable.placeholder)
-                    //.error(R.drawable.error)
-                    .fit()
-                    .into(view);
+            Picasso.with(_context).load(url).fit().into(view);
         }
         return view;
     }
