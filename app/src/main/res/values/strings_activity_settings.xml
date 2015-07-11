@@ -3,13 +3,13 @@
 
     <string name="pref_sort_order_key">sort_order</string>
     <string name="pref_sort_order_title">Sort Order</string>
-    <string name="pref_sort_order_default">popular</string>
+    <string name="pref_sort_order_default">popularity.desc</string>
     <string-array name="pref_sort_orders">
         <item>Most Popular</item>
         <item>Highest Rated</item>
     </string-array>
     <string-array name="pref_sort_order_values">
-        <item>popular</item>
-        <item>rating</item>
+        <item>popularity.desc</item>
+        <item>vote_average.desc</item>
     </string-array>
 </resources>

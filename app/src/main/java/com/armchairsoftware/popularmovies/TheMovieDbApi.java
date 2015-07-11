@@ -37,6 +37,7 @@ public class TheMovieDbApi {
                 .build();
 
         URL url = new URL(uri.toString());
+        Log.d(LOG_TAG, url.toString());
         return fetchJsonResults(url);
     }
 
@@ -87,6 +88,8 @@ public class TheMovieDbApi {
         JSONArray resultsArray = resultsJson.getJSONArray("results");
         for (int i = 0; i < resultsArray.length(); i++) {
             JSONObject result = resultsArray.getJSONObject(i);
+            if (result == null) continue;
+
             MovieData movieData = new MovieData();
             movieData.adult = result.getBoolean("adult");
             movieData.backdropPath = result.getString("backdrop_path");
