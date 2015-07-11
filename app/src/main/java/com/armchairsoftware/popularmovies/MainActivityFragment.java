@@ -1,6 +1,7 @@
 package com.armchairsoftware.popularmovies;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.AsyncTask;
@@ -15,12 +16,14 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class MainActivityFragment extends Fragment {
@@ -33,11 +36,19 @@ public class MainActivityFragment extends Fragment {
 
         Log.d(LOG_TAG, "Inflating Fragment");
 
-        _adapter = new GridViewAdapter(getActivity(), new ArrayList<String>());
+        _adapter = new GridViewAdapter(getActivity(), new ArrayList<MovieData>());
 
         GridView gv = (GridView) view.findViewById(R.id.grid_view);
         gv.setAdapter(_adapter);
         gv.setOnScrollListener(new ScrollListener(getActivity()));
+        gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                Intent detailIntent = new Intent(getActivity(), DetailActivity.class)
+                        .putExtra("MovieData", (Serializable) _adapter.getItem(position));
+                startActivity(detailIntent);
+            }
+        });
 
         return view;
     }
@@ -52,11 +63,11 @@ public class MainActivityFragment extends Fragment {
         new FetchMoviesTask().execute();
     }
 
-    private class FetchMoviesTask extends AsyncTask<Void, Void, ArrayList<String>> {
+    private class FetchMoviesTask extends AsyncTask<Void, Void, ArrayList<MovieData>> {
         private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
 
         @Override
-        protected ArrayList<String> doInBackground(Void... voids) {
+        protected ArrayList<MovieData> doInBackground(Void... voids) {
             Log.d(LOG_TAG, "Fetching movies");
 
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -65,16 +76,7 @@ public class MainActivityFragment extends Fragment {
             try {
                 String results = new TheMovieDbApi(getActivity()).fetchDiscoverMovieResults(sortOrder);
                 Log.d(LOG_TAG, "results:" + results);
-                ArrayList<MovieData> movies = new TheMovieDbApi(getActivity()).parseDiscoverMovieResults(results);
-                ArrayList<String> imageUrls = new ArrayList<>();
-                for (MovieData movie : movies){
-                    if (movie.posterPath != null && !movie.posterPath.isEmpty()){
-                        String url = TheMovieDbApi.BASE_IMAGE_URL + movie.posterPath;
-                        Log.d(LOG_TAG, "adding url:" + url);
-                        imageUrls.add(url);
-                    }
-                }
-                return imageUrls;
+                return new TheMovieDbApi(getActivity()).parseDiscoverMovieResults(results);
             } catch (IOException e) {
                 Log.e(LOG_TAG, e.getMessage(), e);
                 e.printStackTrace();
@@ -86,13 +88,13 @@ public class MainActivityFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(ArrayList<String> imageUrls) {
+        protected void onPostExecute(ArrayList<MovieData> movies) {
             Log.d(LOG_TAG, "onPostExecute");
-            if (imageUrls == null) { return; }
+            if (movies == null) { return; }
 
             _adapter.clear();
-            for(String url: imageUrls){
-                _adapter.add(url);
+            for(MovieData movie: movies){
+                _adapter.add(movie);
             }
         }
     }

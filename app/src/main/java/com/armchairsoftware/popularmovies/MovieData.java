@@ -1,6 +1,8 @@
 package com.armchairsoftware.popularmovies;
 
-public class MovieData {
+import java.io.Serializable;
+
+public class MovieData implements Serializable {
     boolean adult;
     String backdropPath;
     int budget;

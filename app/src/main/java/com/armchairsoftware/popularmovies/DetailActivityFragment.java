@@ -10,20 +10,15 @@ import android.widget.TextView;
 
 public class DetailActivityFragment extends Fragment {
     private static final String LOG_TAG = DetailActivityFragment.class.getSimpleName();
-    private String _movieId;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
         Intent intent = getActivity().getIntent();
-        if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
-            _movieId = intent.getStringExtra(Intent.EXTRA_TEXT);
-            populateDetails(_movieId);
+        if (intent != null && intent.hasExtra("MovieData")) {
+            MovieData movie = (MovieData)intent.getSerializableExtra("MovieData");
+            ((TextView)rootView.findViewById(R.id.detail_text)).setText(movie.title);
         }
         return rootView;
-    }
-
-    private void populateDetails(String _movieId) {
-        //((TextView) rootView.findViewById(R.id.detail_text)).setText(_forecast);
     }
 }

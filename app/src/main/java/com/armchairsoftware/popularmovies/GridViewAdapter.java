@@ -19,24 +19,24 @@ import java.util.ArrayList;
 
 import static android.widget.ImageView.ScaleType.CENTER_CROP;
 
-final class GridViewAdapter extends BaseAdapter implements AdapterView.OnItemClickListener {
+final class GridViewAdapter extends BaseAdapter {
     private final String LOG_TAG = GridViewAdapter.class.getSimpleName();
     private final Object _lock = new Object();
     private final Context _context;
-    private ArrayList<String> _urls;
-    public GridViewAdapter(Context context, ArrayList<String> urls) {
+    private ArrayList<MovieData> _movies;
+    public GridViewAdapter(Context context, ArrayList<MovieData> movies) {
         _context = context;
-        _urls = urls;
+        _movies = movies;
     }
 
     @Override
     public int getCount() {
-        return _urls.size();
+        return _movies.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return _urls.get(position);
+        return _movies.get(position);
     }
 
     @Override
@@ -56,37 +56,32 @@ final class GridViewAdapter extends BaseAdapter implements AdapterView.OnItemCli
 
         ImageView view = new ImageView(_context);
         view.setScaleType(ImageView.ScaleType.FIT_CENTER);
-
         view.setLayoutParams(new GridView.LayoutParams(width, height));
 
-        String url = _urls.get(position);
-        Log.d(LOG_TAG, url);
-        Picasso.with(_context).load(url)
-                //.placeholder(R.drawable.placeholder)
-                //.error(R.drawable.error)
-                .fit()
-                .into(view);
-
+        MovieData movie = _movies.get(position);
+        if (movie.posterPath != null && !movie.posterPath.isEmpty()) {
+            String url = TheMovieDbApi.BASE_IMAGE_URL + movie.posterPath;
+            Log.d(LOG_TAG, url);
+            Picasso.with(_context).load(url)
+                    //.placeholder(R.drawable.placeholder)
+                    //.error(R.drawable.error)
+                    .fit()
+                    .into(view);
+        }
         return view;
     }
 
-    public void add(String url) {
+    public void add(MovieData movie) {
         synchronized (_lock) {
-            Log.d(LOG_TAG, "add:" + url);
-            _urls.add(url);
+            _movies.add(movie);
         }
         notifyDataSetChanged();
     }
 
     public void clear(){
         synchronized (_lock) {
-            _urls.clear();
+            _movies.clear();
         }
         notifyDataSetChanged();
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
     }
 }
