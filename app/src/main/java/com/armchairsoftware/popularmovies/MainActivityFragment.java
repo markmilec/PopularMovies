@@ -25,14 +25,22 @@ import java.util.ArrayList;
 public class MainActivityFragment extends Fragment {
     private final String LOG_TAG = MainActivityFragment.class.getSimpleName();
     private GridViewAdapter _adapter;
+    private ArrayList<MovieData> _movies = new ArrayList<>();
+    private String _sortOrder;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
-        Log.d(LOG_TAG, "Inflating Fragment");
+        _sortOrder = getSortOrder();
 
-        _adapter = new GridViewAdapter(getActivity(), new ArrayList<MovieData>());
+        if (savedInstanceState != null && savedInstanceState.containsKey("Movies")) {
+            _movies = savedInstanceState.getParcelableArrayList("Movies");
+        } else {
+            updateMoviePosters();
+        }
+
+        _adapter = new GridViewAdapter(getActivity(), _movies);
 
         GridView gv = (GridView) view.findViewById(R.id.grid_view);
         gv.setAdapter(_adapter);
@@ -41,7 +49,7 @@ public class MainActivityFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Intent detailIntent = new Intent(getActivity(), DetailActivity.class)
-                        .putExtra("MovieData", (MovieData)_adapter.getItem(position));
+                        .putExtra("MovieData", (MovieData) _adapter.getItem(position));
                 startActivity(detailIntent);
             }
         });
@@ -50,12 +58,20 @@ public class MainActivityFragment extends Fragment {
     }
 
     @Override
-    public void onStart(){
+    public void onStart() {
         super.onStart();
-        updateMoviePosters();
+        if (_sortOrder != getSortOrder()){
+            updateMoviePosters();
+        }
     }
 
-    private void updateMoviePosters(){
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList("Movies", _movies);
+        super.onSaveInstanceState(outState);
+    }
+
+    private void updateMoviePosters() {
         if (isNetworkAvailable()) {
             new FetchMoviesTask().execute();
         } else {
@@ -64,7 +80,7 @@ public class MainActivityFragment extends Fragment {
     }
 
     private boolean isNetworkAvailable() {
-        ConnectivityManager cm = (ConnectivityManager)getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = cm.getActiveNetworkInfo();
         // if no network is available networkInfo will be null otherwise check if we are connected
         if (networkInfo != null && networkInfo.isConnected()) {
@@ -73,16 +89,26 @@ public class MainActivityFragment extends Fragment {
         return false;
     }
 
+    private void addMoviesToAdapter(ArrayList<MovieData> movies) {
+        if (movies == null) return;
+
+        _adapter.clear();
+        for (MovieData movie : movies) {
+            _adapter.add(movie);
+        }
+    }
+
+    private String getSortOrder() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        return prefs.getString(getString(R.string.pref_sort_order_key), getString(R.string.pref_sort_order_default));
+    }
+
     private class FetchMoviesTask extends AsyncTask<Void, Void, ArrayList<MovieData>> {
         private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
 
         @Override
         protected ArrayList<MovieData> doInBackground(Void... voids) {
-            Log.d(LOG_TAG, "Fetching movies");
-
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            String sortOrder = prefs.getString(getString(R.string.pref_sort_order_key), getString(R.string.pref_sort_order_default));
-            Log.d(LOG_TAG, "sort order:" + sortOrder);
+            String sortOrder = getSortOrder();
             try {
                 String results = new TheMovieDbApi(getActivity()).fetchDiscoverMovieResults(sortOrder);
                 Log.d(LOG_TAG, "results:" + results);
@@ -99,13 +125,7 @@ public class MainActivityFragment extends Fragment {
 
         @Override
         protected void onPostExecute(ArrayList<MovieData> movies) {
-            Log.d(LOG_TAG, "onPostExecute");
-            if (movies == null) { return; }
-
-            _adapter.clear();
-            for(MovieData movie: movies){
-                _adapter.add(movie);
-            }
+            addMoviesToAdapter(movies);
         }
     }
 }

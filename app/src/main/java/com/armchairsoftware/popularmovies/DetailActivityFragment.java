@@ -30,7 +30,6 @@ public class DetailActivityFragment extends Fragment {
             ((TextView)rootView.findViewById(R.id.detail_release_date)).setText(movie.releaseDate);
             ((TextView)rootView.findViewById(R.id.detail_vote_average)).setText(movie.voteAverage + "/10");
             ((TextView)rootView.findViewById(R.id.detail_plot_synopsis)).setText(movie.overview);
-
         }
         return rootView;
     }
