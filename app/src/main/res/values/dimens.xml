@@ -8,4 +8,7 @@
     <dimen name="detail_image_width">100dp</dimen>
     <dimen name="detail_image_height">150dp</dimen>
     <dimen name="detail_release_date_text_size">20sp</dimen>
+    <dimen name="grid_column_width">100dp</dimen>
+    <dimen name="grid_vertical_spacing">0dp</dimen>
+    <dimen name="grid_horizontal_spacing">0dp</dimen>
 </resources>

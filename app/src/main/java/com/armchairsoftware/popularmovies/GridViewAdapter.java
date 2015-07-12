@@ -17,16 +17,18 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-import static android.widget.ImageView.ScaleType.CENTER_CROP;
-
 final class GridViewAdapter extends BaseAdapter {
     private final String LOG_TAG = GridViewAdapter.class.getSimpleName();
     private final Object _lock = new Object();
     private final Context _context;
     private ArrayList<MovieData> _movies;
+    private int _cellHeight = 450;
+
     public GridViewAdapter(Context context, ArrayList<MovieData> movies) {
         _context = context;
         _movies = movies;
+        int width = _context.getResources().getDimensionPixelSize(R.dimen.grid_column_width);
+        _cellHeight = (int)Math.round(width * 1.5);
     }
 
     @Override
@@ -45,18 +47,15 @@ final class GridViewAdapter extends BaseAdapter {
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
-        Log.d(LOG_TAG, "getView[" + position + "]");
-
-        WindowManager window = (WindowManager)_context.getSystemService(Context.WINDOW_SERVICE);
-        Display display = window.getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int width = Math.round(size.x/2);
-        int height = (int)Math.round(width * 1.5);
-
-        ImageView view = new ImageView(_context);
-        view.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        view.setLayoutParams(new GridView.LayoutParams(width, height));
+        ImageView view;
+        if (convertView == null) {
+            view = new ImageView(_context);
+            view.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            view.setMaxHeight(_cellHeight);
+            view.setMinimumHeight(_cellHeight);
+        } else {
+            view = (ImageView)convertView;
+        }
 
         MovieData movie = _movies.get(position);
         if (movie.posterPath != null && !movie.posterPath.isEmpty()) {

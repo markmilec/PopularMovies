@@ -7,12 +7,13 @@
         android:id="@+id/grid_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:numColumns="2"
+        android:numColumns="auto_fit"
+        android:columnWidth="@dimen/grid_column_width"
         android:scrollbarStyle="insideOverlay"
         android:scrollbars="none"
         android:listSelector="@null"
-        android:verticalSpacing="0dp"
-        android:horizontalSpacing="0dp"
+        android:verticalSpacing="@dimen/grid_vertical_spacing"
+        android:horizontalSpacing="@dimen/grid_horizontal_spacing"
         android:stretchMode="columnWidth"
         />
 
