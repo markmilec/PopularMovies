@@ -8,4 +8,5 @@
     <string name="detail_release_date_default">Release Date</string>
     <string name="detail_vote_average_default">Vote Average</string>
     <string name="detail_plot_synopsis_default">Plot Synopsis</string>
+    <string name="no_network">Unable to fetch movies.  Network is unavailable.</string>
 </resources>
