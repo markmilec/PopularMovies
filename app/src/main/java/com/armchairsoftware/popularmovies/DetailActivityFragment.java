@@ -19,11 +19,12 @@ public class DetailActivityFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
         Intent intent = getActivity().getIntent();
         if (intent != null && intent.hasExtra("MovieData")) {
-            MovieData movie = (MovieData)intent.getSerializableExtra("MovieData");
-
-            ImageView imageView = ((ImageView)rootView.findViewById(R.id.detail_image));
-            String url = TheMovieDbApi.BASE_IMAGE_URL + movie.posterPath;
-            Picasso.with(getActivity()).load(url).fit().into(imageView);
+            MovieData movie = intent.getParcelableExtra("MovieData");
+            if (movie.posterPath != null && !movie.posterPath.isEmpty()) {
+                ImageView imageView = ((ImageView) rootView.findViewById(R.id.detail_image));
+                String url = TheMovieDbApi.BASE_IMAGE_URL + movie.posterPath;
+                Picasso.with(getActivity()).load(url).fit().into(imageView);
+            }
 
             ((TextView)rootView.findViewById(R.id.detail_title)).setText(movie.title);
             ((TextView)rootView.findViewById(R.id.detail_release_date)).setText(movie.releaseDate);

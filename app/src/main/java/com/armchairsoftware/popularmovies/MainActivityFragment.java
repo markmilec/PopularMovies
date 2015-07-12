@@ -1,29 +1,21 @@
 package com.armchairsoftware.popularmovies;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Point;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
 
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 
 public class MainActivityFragment extends Fragment {
@@ -45,7 +37,7 @@ public class MainActivityFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Intent detailIntent = new Intent(getActivity(), DetailActivity.class)
-                        .putExtra("MovieData", (Serializable) _adapter.getItem(position));
+                        .putExtra("MovieData", (MovieData)_adapter.getItem(position));
                 startActivity(detailIntent);
             }
         });

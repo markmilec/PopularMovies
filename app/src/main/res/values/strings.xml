@@ -4,4 +4,8 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_detail">Movie Information</string>
     <string name="api_key">4a5f0f34cfa85948319f8d707f7fe08b</string>
+    <string name="detail_title_default">Title</string>
+    <string name="detail_release_date_default">Release Date</string>
+    <string name="detail_vote_average_default">Vote Average</string>
+    <string name="detail_plot_synopsis_default">Plot Synopsis</string>
 </resources>

@@ -1,6 +1,8 @@
 package com.armchairsoftware.popularmovies;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.util.Log;
 
@@ -29,6 +31,8 @@ public class TheMovieDbApi {
     public String fetchDiscoverMovieResults(String sortOrder)
             throws IOException {
 
+        if (!isNetworkAvailable()) return "";
+
         final String discoverMovieUrl = "/discover/movie?";
         Uri uri = Uri.parse(BASE_URL + discoverMovieUrl)
                 .buildUpon()
@@ -44,6 +48,8 @@ public class TheMovieDbApi {
     public String fetchMovieDetails(int id)
             throws IOException {
 
+        if (!isNetworkAvailable()) return "";
+
         final String movieDetailsUrl = "/movie/" + Integer.toString(id);
         Uri uri = Uri.parse(BASE_URL + movieDetailsUrl)
                 .buildUpon()
@@ -57,6 +63,8 @@ public class TheMovieDbApi {
     public String fetchMovieTrailers(int id)
             throws IOException {
 
+        if (!isNetworkAvailable()) return "";
+
         final String movieTrailersUrl = "/movie/" + Integer.toString(id) + "/videos";
         Uri uri = Uri.parse(BASE_URL + movieTrailersUrl)
                 .buildUpon()
@@ -69,6 +77,8 @@ public class TheMovieDbApi {
 
     public String fetchMovieReviews(int id)
             throws IOException {
+
+        if (!isNetworkAvailable()) return "";
 
         final String movieReviewsUrl = "/movie/" + Integer.toString(id) + "/reviews";
         Uri uri = Uri.parse(BASE_URL + movieReviewsUrl)
@@ -236,5 +246,15 @@ public class TheMovieDbApi {
         }
 
         return jsonStr;
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager cm = (ConnectivityManager)_context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+        // if no network is available networkInfo will be null otherwise check if we are connected
+        if (networkInfo != null && networkInfo.isConnected()) {
+            return true;
+        }
+        return false;
     }
 }
