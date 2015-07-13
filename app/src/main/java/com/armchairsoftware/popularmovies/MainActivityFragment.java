@@ -60,7 +60,9 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        if (_sortOrder != getSortOrder()){
+        String sortOrder = getSortOrder();
+        if (_sortOrder != sortOrder){
+            _sortOrder = sortOrder;
             updateMoviePosters();
         }
     }
