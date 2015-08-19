@@ -16,10 +16,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
-
-import org.json.JSONException;
-
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainActivityFragment extends Fragment {
@@ -109,18 +105,7 @@ public class MainActivityFragment extends Fragment {
         @Override
         protected ArrayList<MovieData> doInBackground(Void... voids) {
             String sortOrder = getSortOrder();
-            try {
-                String results = new TheMovieDbApi(getActivity()).fetchDiscoverMovieResults(sortOrder);
-                Log.d(LOG_TAG, "results:" + results);
-                return new TheMovieDbApi(getActivity()).parseDiscoverMovieResults(results);
-            } catch (IOException e) {
-                Log.e(LOG_TAG, e.getMessage(), e);
-                e.printStackTrace();
-            } catch (JSONException e) {
-                Log.e(LOG_TAG, e.getMessage(), e);
-                e.printStackTrace();
-            }
-            return null;
+            return new TheMovieDbApi(getActivity()).getDiscoverMovieResults(sortOrder);
         }
 
         @Override

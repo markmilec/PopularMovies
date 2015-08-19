@@ -1,9 +1,11 @@
 package com.armchairsoftware.popularmovies;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -17,6 +19,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class TheMovieDbApi {
     private final String LOG_TAG = TheMovieDbApi.class.getSimpleName();
@@ -26,6 +29,32 @@ public class TheMovieDbApi {
 
     public TheMovieDbApi(Context context) {
         _context = context;
+    }
+
+    public ArrayList<MovieData> getDiscoverMovieResults(String sortOrder) {
+        try {
+            if (sortOrder ==  _context.getString(R.string.pref_sort_order_favorites)){
+                ArrayList<MovieData> movies = new ArrayList<>();
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(_context);
+                HashSet<String> favorites = (HashSet<String>)prefs.getStringSet(_context.getString(R.string.favorites_key), new HashSet<String>());
+                for (String id : favorites) {
+                    Log.d(LOG_TAG, id);
+                    Integer movieID = Integer.valueOf(id);
+                    String result = fetchMovieDetails(movieID);
+                    Log.d(LOG_TAG, result);
+                    MovieData movie = parseMovieDetails(result);
+                    movies.add(movie);
+                }
+                return movies;
+            } else {
+                String results = fetchDiscoverMovieResults(sortOrder);
+                return parseDiscoverMovieResults(results);
+            }
+        } catch (Exception e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
     public String fetchDiscoverMovieResults(String sortOrder)
@@ -119,38 +148,32 @@ public class TheMovieDbApi {
         return movieDataList;
     }
 
-    public ArrayList<MovieData> parseMovieDetails(String json)
+    public MovieData parseMovieDetails(String json)
             throws JSONException {
 
-        ArrayList<MovieData> movieDataList = new ArrayList<>();
-        JSONObject resultsJson = new JSONObject(json);
-        JSONArray resultsArray = resultsJson.getJSONArray("results");
-        for (int i = 0; i < resultsArray.length(); i++) {
-            JSONObject result = resultsArray.getJSONObject(i);
-            MovieData movieData = new MovieData();
-            movieData.adult = result.getBoolean("adult");
-            movieData.backdropPath = result.getString("backdrop_path");
-            movieData.budget = result.getInt("budget");
-            movieData.homepage = result.getString("homepage");
-            movieData.id = result.getInt("id");
-            movieData.imdb_id = result.getString("imdb_id");
-            movieData.originalLanguage = result.getString("original_language");
-            movieData.originalTitle = result.getString("original_title");
-            movieData.overview = result.getString("overview");
-            movieData.releaseDate = result.getString("release_date");
-            movieData.posterPath = result.getString("poster_path");
-            movieData.popularity = result.getDouble("popularity");
-            movieData.revenue = result.getInt("revenue");
-            movieData.runtime = result.getInt("runtime");
-            movieData.status = result.getString("status");
-            movieData.tagline = result.getString("tagline");
-            movieData.title = result.getString("title");
-            movieData.video = result.getBoolean("video");
-            movieData.voteAverage = result.getDouble("vote_average");
-            movieData.voteCount = result.getInt("vote_count");
-            movieDataList.add(movieData);
-        }
-        return movieDataList;
+        JSONObject result = new JSONObject(json);
+        MovieData movieData = new MovieData();
+        movieData.adult = result.getBoolean("adult");
+        movieData.backdropPath = result.getString("backdrop_path");
+        movieData.budget = result.getInt("budget");
+        movieData.homepage = result.getString("homepage");
+        movieData.id = result.getInt("id");
+        movieData.imdb_id = result.getString("imdb_id");
+        movieData.originalLanguage = result.getString("original_language");
+        movieData.originalTitle = result.getString("original_title");
+        movieData.overview = result.getString("overview");
+        movieData.releaseDate = result.getString("release_date");
+        movieData.posterPath = result.getString("poster_path");
+        movieData.popularity = result.getDouble("popularity");
+        movieData.revenue = result.getInt("revenue");
+        movieData.runtime = result.getInt("runtime");
+        movieData.status = result.getString("status");
+        movieData.tagline = result.getString("tagline");
+        movieData.title = result.getString("title");
+        movieData.video = result.getBoolean("video");
+        movieData.voteAverage = result.getDouble("vote_average");
+        movieData.voteCount = result.getInt("vote_count");
+        return movieData;
     }
 
     public ArrayList<MovieTrailer> parseMovieTrailers(String json)
