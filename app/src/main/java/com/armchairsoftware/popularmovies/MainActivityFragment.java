@@ -48,9 +48,7 @@ public class MainActivityFragment extends Fragment {
         gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Intent detailIntent = new Intent(getActivity(), DetailActivity.class)
-                        .putExtra("MovieData", (MovieData) _adapter.getItem(position));
-                startActivity(detailIntent);
+                ((ICallback) getActivity()).onItemSelected((MovieData) _adapter.getItem(position));
             }
         });
 

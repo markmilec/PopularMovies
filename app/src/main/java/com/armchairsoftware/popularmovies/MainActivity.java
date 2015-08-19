@@ -7,9 +7,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements ICallback {
     private final String LOG_TAG = MainActivity.class.getSimpleName();
-    private static final String MAINFRAGMENT_TAG = "MAINTAG";
     private static final String DETAILFRAGMENT_TAG = "DETAILTAG";
 
     private boolean _twoPane;
@@ -18,6 +17,13 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_main, new MainActivityFragment())
+                    .commit();
+        }
+
         if (findViewById(R.id.container_detail) != null) {
             // The detail container view will be present only in the large-screen layouts
             // (res/layout-sw600dp). If this view is present, then the activity should be
@@ -50,5 +56,27 @@ public class MainActivity extends ActionBarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onItemSelected(MovieData movieData) {
+        if (_twoPane) {
+            // In two-pane mode, show the detail view in this activity by
+            // adding or replacing the detail fragment using a
+            // fragment transaction.
+            Bundle args = new Bundle();
+            args.putParcelable(DetailActivityFragment.DATA_KEY, movieData);
+
+            DetailActivityFragment fragment = new DetailActivityFragment();
+            fragment.setArguments(args);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container_detail, fragment, DETAILFRAGMENT_TAG)
+                    .commit();
+        } else {
+            Intent intent = new Intent(this, DetailActivity.class)
+                    .putExtra(DetailActivityFragment.DATA_KEY, movieData);
+            startActivity(intent);
+        }
     }
 }
