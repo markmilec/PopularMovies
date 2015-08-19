@@ -57,6 +57,28 @@ public class TheMovieDbApi {
         }
     }
 
+    public ArrayList<MovieReview> getMovieReviews(Integer movieID) {
+        try {
+            String results = fetchMovieReviews(movieID);
+            return parseMovieReviews(results);
+        } catch (Exception e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public ArrayList<MovieTrailer> getMovieTrailers(Integer movieID) {
+        try {
+            String results = fetchMovieTrailers(movieID);
+            return parseMovieTrailers(results);
+        } catch (Exception e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
     public String fetchDiscoverMovieResults(String sortOrder)
             throws IOException {
 

@@ -1,19 +1,25 @@
 package com.armchairsoftware.popularmovies;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TableLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -27,10 +33,15 @@ public class DetailActivityFragment extends Fragment {
 
     private HashSet<String> _favorites = new HashSet<>();
     private MovieData _movieData = null;
+    private LinearLayout _trailerLayout;
+    private LinearLayout _reviewLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+
+        _trailerLayout = (LinearLayout)rootView.findViewById(R.id.detail_trailers);
+        _reviewLayout = (LinearLayout)rootView.findViewById(R.id.detail_reviews);
 
         Bundle arguments = getArguments();
         if (arguments != null) {
@@ -54,6 +65,9 @@ public class DetailActivityFragment extends Fragment {
             final String movieID = Integer.toString(_movieData.id);
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
             final String favorites_key = getActivity().getString(R.string.favorites_key);
+
+            getReviews();
+            getTrailers();
 
             if (prefs.contains(favorites_key)) {
                 _favorites = (HashSet<String>) prefs.getStringSet(favorites_key, new HashSet<String>());
@@ -79,5 +93,66 @@ public class DetailActivityFragment extends Fragment {
             });
         }
         return rootView;
+    }
+
+    private void getTrailers() {
+        if (Utility.isNetworkAvailable(getActivity())) {
+            new FetchMovieTrailersTask().execute();
+        } else {
+            Toast.makeText(getActivity(), R.string.no_network, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void getReviews() {
+        if (Utility.isNetworkAvailable(getActivity())) {
+            new FetchMovieReviewsTask().execute();
+        } else {
+            Toast.makeText(getActivity(), R.string.no_network, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private class FetchMovieReviewsTask extends AsyncTask<Void, Void, ArrayList<MovieReview>> {
+        private final String LOG_TAG = FetchMovieReviewsTask.class.getSimpleName();
+
+        @Override
+        protected ArrayList<MovieReview> doInBackground(Void... voids) {
+            return new TheMovieDbApi(getActivity()).getMovieReviews(_movieData.id);
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<MovieReview> reviews) {
+            for(MovieReview review: reviews) {
+                Log.d(LOG_TAG, review.content);
+                TextView view = new TextView(getActivity());
+                view.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT));
+                view.setText(review.content);
+                _reviewLayout.addView(view);
+            }
+        }
+    }
+
+    private class FetchMovieTrailersTask extends AsyncTask<Void, Void, ArrayList<MovieTrailer>> {
+        private final String LOG_TAG = FetchMovieReviewsTask.class.getSimpleName();
+
+        @Override
+        protected ArrayList<MovieTrailer> doInBackground(Void... voids) {
+            return new TheMovieDbApi(getActivity()).getMovieTrailers(_movieData.id);
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<MovieTrailer> trailers) {
+            for(final MovieTrailer trailer: trailers) {
+                Log.d(LOG_TAG, trailer.name);
+                TextView view = new TextView(getActivity());
+                view.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                view.setText(trailer.name);
+                view.setOnClickListener(new View.OnClickListener() {
+                    public void onClick (View view){
+                        Utility.launchYouTube(getActivity(), trailer.key);
+                    }
+                });
+                _trailerLayout.addView(view);
+            }
+        }
     }
 }

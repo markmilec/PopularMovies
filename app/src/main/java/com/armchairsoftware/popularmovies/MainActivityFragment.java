@@ -68,21 +68,11 @@ public class MainActivityFragment extends Fragment {
     }
 
     private void updateMoviePosters() {
-        if (isNetworkAvailable()) {
+        if (Utility.isNetworkAvailable(getActivity())) {
             new FetchMoviesTask().execute();
         } else {
             Toast.makeText(getActivity(), R.string.no_network, Toast.LENGTH_LONG).show();
         }
-    }
-
-    private boolean isNetworkAvailable() {
-        ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-        // if no network is available networkInfo will be null otherwise check if we are connected
-        if (networkInfo != null && networkInfo.isConnected()) {
-            return true;
-        }
-        return false;
     }
 
     private void addMoviesToAdapter(ArrayList<MovieData> movies) {

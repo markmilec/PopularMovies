@@ -21,8 +21,7 @@
                 android:textColor="@color/primary_text_default_material_dark"
                 android:gravity="center_vertical"
                 android:textSize="@dimen/detail_title_text_size"
-                android:padding="@dimen/detail_padding"
-                android:text="@string/detail_title_default" />
+                android:padding="@dimen/detail_padding" />
 
             <CheckBox android:id="@+id/favorite"
                 android:layout_width="wrap_content"
@@ -54,14 +53,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/detail_release_date_text_size"
-                    android:padding="@dimen/detail_padding"
-                    android:text="@string/detail_release_date_default" />
+                    android:padding="@dimen/detail_padding"/>
 
                 <TextView android:id="@+id/detail_vote_average"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="@dimen/detail_padding"
-                    android:text="@string/detail_vote_average_default" />
+                    android:padding="@dimen/detail_padding"/>
 
             </LinearLayout>
 
@@ -70,8 +67,17 @@
         <TextView android:id="@+id/detail_plot_synopsis"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/detail_padding"
-            android:text="@string/detail_plot_synopsis_default" />
+            android:padding="@dimen/detail_padding"/>
+
+        <LinearLayout android:id="@+id/detail_trailers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+        <LinearLayout android:id="@+id/detail_reviews"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
 
     </LinearLayout>
 
