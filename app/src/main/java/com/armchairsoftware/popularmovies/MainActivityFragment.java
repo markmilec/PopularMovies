@@ -54,8 +54,7 @@ public class MainActivityFragment extends Fragment {
     public void onStart() {
         super.onStart();
         String sortOrder = getSortOrder();
-        Log.d(LOG_TAG, sortOrder);
-        if (_sortOrder != sortOrder){
+        if (!_sortOrder.equals(sortOrder)){
             _sortOrder = sortOrder;
             updateMoviePosters();
         }
