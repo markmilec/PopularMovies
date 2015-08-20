@@ -13,7 +13,7 @@
     <dimen name="grid_horizontal_spacing">0dp</dimen>
 
     <dimen name="cardview_corner_radius">2dp</dimen>
-    <dimen name="cardview_content_padding">10                                                                       dp</dimen>
+    <dimen name="cardview_content_padding">10dp</dimen>
     <dimen name="cardview_layout_margin">0dp</dimen>
     <dimen name="trailer_text_size">15sp</dimen>
     <dimen name="trailer_image_height">20sp</dimen>

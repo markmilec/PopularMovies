@@ -32,9 +32,13 @@ import java.util.Set;
 public class DetailActivityFragment extends Fragment {
     private static final String LOG_TAG = DetailActivityFragment.class.getSimpleName();
     public static final String DATA_KEY = "MOVIE_DATA";
+    public static final String TRAILERS_KEY = "TRAILERS";
+    public static final String REVIEWS_KEY = "REVIEWS";
 
     private HashSet<String> _favorites = new HashSet<>();
     private MovieData _movieData = null;
+    private ArrayList<MovieTrailer> _trailers = new ArrayList<>();
+    private ArrayList<MovieReview> _reviews = new ArrayList<>();
     private LinearLayout _trailerLayout;
     private LinearLayout _reviewLayout;
 
@@ -68,8 +72,19 @@ public class DetailActivityFragment extends Fragment {
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
             final String favorites_key = getActivity().getString(R.string.favorites_key);
 
-            getReviews();
-            getTrailers();
+            if (savedInstanceState != null) {
+                if (savedInstanceState.containsKey(TRAILERS_KEY)) {
+                    _trailers = savedInstanceState.getParcelableArrayList(TRAILERS_KEY);
+                    updateTrailers(_trailers);
+                }
+                if (savedInstanceState.containsKey(REVIEWS_KEY)) {
+                    _reviews = savedInstanceState.getParcelableArrayList(REVIEWS_KEY);
+                    updateReviews(_reviews);
+                }
+            } else {
+                getReviews();
+                getTrailers();
+            }
 
             if (prefs.contains(favorites_key)) {
                 _favorites = (HashSet<String>) prefs.getStringSet(favorites_key, new HashSet<String>());
@@ -97,6 +112,13 @@ public class DetailActivityFragment extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList(TRAILERS_KEY, _trailers);
+        outState.putParcelableArrayList(REVIEWS_KEY, _reviews);
+        super.onSaveInstanceState(outState);
+    }
+
     private void getTrailers() {
         if (Utility.isNetworkAvailable(getActivity())) {
             new FetchMovieTrailersTask().execute();
@@ -113,6 +135,61 @@ public class DetailActivityFragment extends Fragment {
         }
     }
 
+    private void updateTrailers(ArrayList<MovieTrailer> trailers){
+        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        if (!trailers.isEmpty()){
+            ((TextView)_trailerLayout.findViewById(R.id.detail_trailers_title)).setText(getString(R.string.detail_trailers_title));
+        }
+
+        for(final MovieTrailer trailer: trailers) {
+            CardView view = (CardView)inflater.inflate(R.layout.view_trailer, _trailerLayout, false);
+
+            TextView textView = (TextView)view.findViewById(R.id.trailer_name);
+            textView.setText(trailer.name);
+
+            view.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View view) {
+                    Utility.launchYouTube(getActivity(), trailer.key);
+                }
+            });
+
+            _trailerLayout.addView(view);
+        }
+    }
+
+    private void updateReviews(ArrayList<MovieReview> reviews){
+        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        if (!reviews.isEmpty()){
+            ((TextView)_reviewLayout.findViewById(R.id.detail_reviews_title)).setText(getString(R.string.detail_reviews_title));
+        }
+
+        for(MovieReview review: reviews) {
+            CardView view = (CardView)inflater.inflate(R.layout.view_review, _reviewLayout, false);
+
+            TextView authorView= (TextView)view.findViewById(R.id.review_author);
+            authorView.setText(review.author);
+
+            TextView contentView = (TextView)view.findViewById(R.id.review_content);
+            contentView.setText(review.content);
+            view.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View view) {
+                    TextView textView = (TextView)view.findViewById(R.id.review_content);
+                    if (textView.getMaxLines() == 1) {
+                        textView.setMaxLines(Integer.MAX_VALUE);
+                        textView.setEllipsize(null);
+                    } else {
+                        textView.setMaxLines(1);
+                        textView.setEllipsize(TextUtils.TruncateAt.END);
+                    }
+                }
+            });
+
+            _reviewLayout.addView(view);
+        }
+    }
+
     private class FetchMovieReviewsTask extends AsyncTask<Void, Void, ArrayList<MovieReview>> {
         private final String LOG_TAG = FetchMovieReviewsTask.class.getSimpleName();
 
@@ -123,37 +200,8 @@ public class DetailActivityFragment extends Fragment {
 
         @Override
         protected void onPostExecute(ArrayList<MovieReview> reviews) {
-            LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-            if (!reviews.isEmpty()){
-                ((TextView)_reviewLayout.findViewById(R.id.detail_reviews_title)).setText(getString(R.string.detail_reviews_title));
-            }
-
-            for(MovieReview review: reviews) {
-                Log.d(LOG_TAG, review.content);
-
-                CardView view = (CardView)inflater.inflate(R.layout.view_review, _reviewLayout, false);
-
-                TextView authorView= (TextView)view.findViewById(R.id.review_author);
-                authorView.setText(review.author);
-
-                TextView contentView = (TextView)view.findViewById(R.id.review_content);
-                contentView.setText(review.content);
-                view.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View view) {
-                        TextView textView = (TextView)view.findViewById(R.id.review_content);
-                        if (textView.getMaxLines() == 1) {
-                            textView.setMaxLines(Integer.MAX_VALUE);
-                            textView.setEllipsize(null);
-                        } else {
-                            textView.setMaxLines(1);
-                            textView.setEllipsize(TextUtils.TruncateAt.END);
-                        }
-                    }
-                });
-
-                _reviewLayout.addView(view);
-            }
+            _reviews = reviews;
+            updateReviews(reviews);
         }
     }
 
@@ -167,28 +215,8 @@ public class DetailActivityFragment extends Fragment {
 
         @Override
         protected void onPostExecute(ArrayList<MovieTrailer> trailers) {
-            LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-            if (!trailers.isEmpty()){
-                ((TextView)_trailerLayout.findViewById(R.id.detail_trailers_title)).setText(getString(R.string.detail_trailers_title));
-            }
-
-            for(final MovieTrailer trailer: trailers) {
-                Log.d(LOG_TAG, trailer.name);
-
-                CardView view = (CardView)inflater.inflate(R.layout.view_trailer, _trailerLayout, false);
-
-                TextView textView = (TextView)view.findViewById(R.id.trailer_name);
-                textView.setText(trailer.name);
-
-                view.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View view) {
-                        Utility.launchYouTube(getActivity(), trailer.key);
-                    }
-                });
-
-                _trailerLayout.addView(view);
-            }
+            _trailers = trailers;
+            updateTrailers(trailers);
         }
     }
 }
