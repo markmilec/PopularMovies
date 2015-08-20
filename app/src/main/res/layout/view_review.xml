@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_view"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/cardview_layout_margin"
+    card_view:cardCornerRadius="@dimen/cardview_corner_radius"
+    card_view:contentPadding="@dimen/cardview_content_padding">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <TextView
+            android:id="@+id/review_author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:layout_alignParentTop="true"
+            android:text="Author"/>
+
+        <TextView
+            android:id="@+id/review_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/cardview_layout_margin"
+            android:layout_below="@+id/review_author"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque non nulla ut dui sollicitudin feugiat non non leo. Donec nec eros eu justo hendrerit malesuada. Etiam nec nisl scelerisque urna lacinia congue faucibus vitae sem. Suspendisse euismod tellus ex, vitae elementum ipsum viverra placerat. Curabitur eu metus ut urna fermentum hendrerit vel eu lectus. Praesent ut neque ipsum. Proin facilisis vitae neque ac facilisis. Maecenas consequat feugiat odio, sed auctor tortor eleifend quis. Nullam ac vestibulum nulla, a rhoncus elit. Cras ultrices blandit sapien at imperdiet. Fusce non tempus quam. Donec convallis venenatis iaculis. Ut a justo rutrum, semper neque sed, egestas justo. Vestibulum sodales ante magna, vel iaculis tortor placerat vitae."/>
+
+    </RelativeLayout>
+</android.support.v7.widget.CardView>
