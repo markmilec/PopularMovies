@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,8 @@ import java.util.ArrayList;
 
 public class MainActivityFragment extends Fragment {
     private final String LOG_TAG = MainActivityFragment.class.getSimpleName();
+    private final String MOVIES_KEY = "MOVIES";
+
     private GridViewAdapter _adapter;
     private ArrayList<MovieData> _movies = new ArrayList<>();
     private String _sortOrder;
@@ -26,8 +29,8 @@ public class MainActivityFragment extends Fragment {
 
         _sortOrder = getSortOrder();
 
-        if (savedInstanceState != null && savedInstanceState.containsKey("Movies")) {
-            _movies = savedInstanceState.getParcelableArrayList("Movies");
+        if (savedInstanceState != null && savedInstanceState.containsKey(MOVIES_KEY)) {
+            _movies = savedInstanceState.getParcelableArrayList(MOVIES_KEY);
         } else {
             updateMoviePosters();
         }
@@ -51,6 +54,7 @@ public class MainActivityFragment extends Fragment {
     public void onStart() {
         super.onStart();
         String sortOrder = getSortOrder();
+        Log.d(LOG_TAG, sortOrder);
         if (_sortOrder != sortOrder){
             _sortOrder = sortOrder;
             updateMoviePosters();
@@ -59,7 +63,7 @@ public class MainActivityFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList("Movies", _movies);
+        outState.putParcelableArrayList(MOVIES_KEY, _movies);
         super.onSaveInstanceState(outState);
     }
 
