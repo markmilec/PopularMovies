@@ -33,7 +33,7 @@ public class TheMovieDbApi {
 
     public ArrayList<MovieData> getDiscoverMovieResults(String sortOrder) {
         try {
-            if (sortOrder ==  _context.getString(R.string.pref_sort_order_favorites)){
+            if (sortOrder.equals(_context.getString(R.string.pref_sort_order_favorites))){
                 ArrayList<MovieData> movies = new ArrayList<>();
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(_context);
                 HashSet<String> favorites = (HashSet<String>)prefs.getStringSet(_context.getString(R.string.favorites_key), new HashSet<String>());
@@ -82,7 +82,7 @@ public class TheMovieDbApi {
     public String fetchDiscoverMovieResults(String sortOrder)
             throws IOException {
 
-        if (!isNetworkAvailable()) return "";
+        if (!Utility.isNetworkAvailable(_context)) return "";
 
         final String discoverMovieUrl = "/discover/movie?";
         Uri uri = Uri.parse(BASE_URL + discoverMovieUrl)
@@ -99,7 +99,7 @@ public class TheMovieDbApi {
     public String fetchMovieDetails(int id)
             throws IOException {
 
-        if (!isNetworkAvailable()) return "";
+        if (!Utility.isNetworkAvailable(_context)) return "";
 
         final String movieDetailsUrl = "/movie/" + Integer.toString(id);
         Uri uri = Uri.parse(BASE_URL + movieDetailsUrl)
@@ -114,7 +114,7 @@ public class TheMovieDbApi {
     public String fetchMovieTrailers(int id)
             throws IOException {
 
-        if (!isNetworkAvailable()) return "";
+        if (!Utility.isNetworkAvailable(_context)) return "";
 
         final String movieTrailersUrl = "/movie/" + Integer.toString(id) + "/videos";
         Uri uri = Uri.parse(BASE_URL + movieTrailersUrl)
@@ -129,7 +129,7 @@ public class TheMovieDbApi {
     public String fetchMovieReviews(int id)
             throws IOException {
 
-        if (!isNetworkAvailable()) return "";
+        if (!Utility.isNetworkAvailable(_context)) return "";
 
         final String movieReviewsUrl = "/movie/" + Integer.toString(id) + "/reviews";
         Uri uri = Uri.parse(BASE_URL + movieReviewsUrl)
@@ -291,15 +291,5 @@ public class TheMovieDbApi {
         }
 
         return jsonStr;
-    }
-
-    private boolean isNetworkAvailable() {
-        ConnectivityManager cm = (ConnectivityManager)_context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-        // if no network is available networkInfo will be null otherwise check if we are connected
-        if (networkInfo != null && networkInfo.isConnected()) {
-            return true;
-        }
-        return false;
     }
 }
